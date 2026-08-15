@@ -1,13 +1,657 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Shop Management System</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
+
+            <div>
+                <h2>SmartShop</h2>
+                <span>Management</span>
+            </div>
+        </div>
+
+        <nav class="menu">
+
+            <a href="#" class="menu-item active">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Sales</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-users"></i>
+                <span>Customers</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-warehouse"></i>
+                <span>Inventory</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Reports</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="#" class="menu-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+
+            <a href="#" class="menu-item logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's what's happening in your shop.</p>
+            </div>
+
+            <div class="topbar-right">
+
+                <button class="icon-btn">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <button class="icon-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+
+                <div class="profile">
+
+                    <div class="profile-avatar">
+                        DG
+                    </div>
+
+                    <div class="profile-info">
+                        <strong>Shop Admin</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= HERO SLIDER ================= -->
+
+        <section class="hero-slider">
+
+            <div class="slides">
+
+                <!-- SLIDE 1 -->
+
+                <div class="slide active-slide">
+
+                    <div class="slide-content">
+
+                        <span class="slide-tag">
+                            <i class="fa-solid fa-bolt"></i>
+                            SMART MANAGEMENT
+                        </span>
+
+                        <h2>
+                            Manage Your Shop
+                            <span>Smarter.</span>
+                        </h2>
+
+                        <p>
+                            Manage products, sales, customers and inventory
+                            from one powerful dashboard.
+                        </p>
+
+                        <button class="primary-btn">
+                            Explore Dashboard
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="slide-visual">
+
+                        <div class="visual-card main-visual">
+
+                            <div class="visual-header">
+                                <span>Today's Sales</span>
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </div>
+
+                            <h3>₹48,560</h3>
+
+                            <div class="growth">
+                                <i class="fa-solid fa-arrow-up"></i>
+                                18.4%
+                                <span>vs last week</span>
+                            </div>
+
+                            <div class="fake-chart">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                        </div>
+
+                        <div class="floating-card customers-card">
+                            <i class="fa-solid fa-users"></i>
+                            <div>
+                                <strong>1,248</strong>
+                                <small>Customers</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SLIDE 2 -->
+
+                <div class="slide">
+
+                    <div class="slide-content">
+
+                        <span class="slide-tag">
+                            <i class="fa-solid fa-box"></i>
+                            INVENTORY CONTROL
+                        </span>
+
+                        <h2>
+                            Never Run Out
+                            <span>Of Stock.</span>
+                        </h2>
+
+                        <p>
+                            Track your products and stock levels in real-time
+                            with smart inventory management.
+                        </p>
+
+                        <button class="primary-btn">
+                            Manage Inventory
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="slide-visual inventory-visual">
+
+                        <div class="inventory-box">
+
+                            <div class="inventory-title">
+                                <span>Inventory Overview</span>
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </div>
+
+                            <div class="inventory-item">
+                                <div class="product-icon">
+                                    <i class="fa-solid fa-mobile-screen"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Smartphone</strong>
+                                    <small>125 units</small>
+                                </div>
+
+                                <span class="stock good">In Stock</span>
+                            </div>
+
+                            <div class="inventory-item">
+                                <div class="product-icon">
+                                    <i class="fa-solid fa-headphones"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Headphones</strong>
+                                    <small>32 units</small>
+                                </div>
+
+                                <span class="stock medium">Low Stock</span>
+                            </div>
+
+                            <div class="inventory-item">
+                                <div class="product-icon">
+                                    <i class="fa-solid fa-keyboard"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Keyboard</strong>
+                                    <small>8 units</small>
+                                </div>
+
+                                <span class="stock danger">Critical</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SLIDE 3 -->
+
+                <div class="slide">
+
+                    <div class="slide-content">
+
+                        <span class="slide-tag">
+                            <i class="fa-solid fa-chart-line"></i>
+                            BUSINESS ANALYTICS
+                        </span>
+
+                        <h2>
+                            Understand Your
+                            <span>Business.</span>
+                        </h2>
+
+                        <p>
+                            Get powerful sales reports and analytics to make
+                            better business decisions.
+                        </p>
+
+                        <button class="primary-btn">
+                            View Reports
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="slide-visual analytics-visual">
+
+                        <div class="analytics-card">
+
+                            <div class="analytics-header">
+                                <div>
+                                    <small>Total Revenue</small>
+                                    <h3>₹2,84,650</h3>
+                                </div>
+
+                                <span class="profit">
+                                    +24.8%
+                                </span>
+                            </div>
+
+                            <div class="analytics-chart">
+
+                                <div class="chart-line"></div>
+
+                                <div class="chart-dot dot-1"></div>
+                                <div class="chart-dot dot-2"></div>
+                                <div class="chart-dot dot-3"></div>
+                                <div class="chart-dot dot-4"></div>
+                                <div class="chart-dot dot-5"></div>
+
+                            </div>
+
+                            <div class="chart-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SLIDE 4 -->
+
+                <div class="slide">
+
+                    <div class="slide-content">
+
+                        <span class="slide-tag">
+                            <i class="fa-solid fa-users"></i>
+                            CUSTOMER MANAGEMENT
+                        </span>
+
+                        <h2>
+                            Build Better
+                            <span>Customer Relationships.</span>
+                        </h2>
+
+                        <p>
+                            Keep customer information organized and provide
+                            a better shopping experience.
+                        </p>
+
+                        <button class="primary-btn">
+                            View Customers
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="slide-visual">
+
+                        <div class="customer-dashboard">
+
+                            <div class="customer-top">
+                                <span>Customers</span>
+
+                                <div class="customer-count">
+                                    <strong>1,248</strong>
+                                    <small>Total Customers</small>
+                                </div>
+                            </div>
+
+                            <div class="customer-row">
+                                <div class="customer-avatar">AK</div>
+                                <div>
+                                    <strong>Akash Kumar</strong>
+                                    <small>₹12,450 spent</small>
+                                </div>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                            <div class="customer-row">
+                                <div class="customer-avatar">RS</div>
+                                <div>
+                                    <strong>Rahul Sharma</strong>
+                                    <small>₹8,920 spent</small>
+                                </div>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                            <div class="customer-row">
+                                <div class="customer-avatar">PM</div>
+                                <div>
+                                    <strong>Priya Mehta</strong>
+                                    <small>₹6,780 spent</small>
+                                </div>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SLIDER BUTTONS -->
+
+            <button class="slider-btn prev-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button class="slider-btn next-btn">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+
+            <!-- SLIDER DOTS -->
+
+            <div class="slider-dots">
+
+                <button class="dot active-dot"></button>
+                <button class="dot"></button>
+                <button class="dot"></button>
+                <button class="dot"></button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STAT CARDS ================= -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon sales-icon">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Total Sales</span>
+                    <h3>₹1,24,560</h3>
+                    <small class="positive">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        12.5% this month
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon product-icon-stat">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Total Products</span>
+                    <h3>2,845</h3>
+                    <small class="positive">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        8.2% this month
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon customer-icon-stat">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Customers</span>
+                    <h3>1,248</h3>
+                    <small class="positive">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        5.7% this month
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon profit-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Net Profit</span>
+                    <h3>₹42,850</h3>
+                    <small class="positive">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        15.3% this month
+                    </small>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RECENT SALES ================= -->
+
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Recent Sales</h2>
+                    <p>Latest transactions from your shop</p>
+                </div>
+
+                <button class="view-btn">
+                    View All
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                <div class="table-customer">
+                                    <div class="small-avatar">AK</div>
+                                    Akash Kumar
+                                </div>
+                            </td>
+
+                            <td>iPhone 15</td>
+
+                            <td>₹72,999</td>
+
+                            <td>
+                                <span class="status completed">
+                                    Completed
+                                </span>
+                            </td>
+
+                            <td>Today, 10:42 AM</td>
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                <div class="table-customer">
+                                    <div class="small-avatar">RS</div>
+                                    Rahul Sharma
+                                </div>
+                            </td>
+
+                            <td>Wireless Headphones</td>
+
+                            <td>₹4,999</td>
+
+                            <td>
+                                <span class="status completed">
+                                    Completed
+                                </span>
+                            </td>
+
+                            <td>Today, 09:18 AM</td>
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                <div class="table-customer">
+                                    <div class="small-avatar">PM</div>
+                                    Priya Mehta
+                                </div>
+                            </td>
+
+                            <td>Mechanical Keyboard</td>
+
+                            <td>₹6,499</td>
+
+                            <td>
+                                <span class="status pending">
+                                    Pending
+                                </span>
+                            </td>
+
+                            <td>Yesterday</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/script.js"></script>
+
+</body>
 </html>
