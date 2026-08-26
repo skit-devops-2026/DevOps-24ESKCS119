@@ -49,25 +49,25 @@
 
             <div class="card">
                 <h3>Total Products</h3>
-                <h2>24</h2>
+                <h2 id="totalProducts">0</h2>
                 <p>Products available</p>
             </div>
 
             <div class="card">
                 <h3>Total Sales</h3>
-                <h2>₹45,500</h2>
+                <h2 id="totalSales">₹0</h2>
                 <p>This month</p>
             </div>
 
             <div class="card">
                 <h3>Customers</h3>
-                <h2>18</h2>
+                <h2 id="totalCustomers">0</h2>
                 <p>Registered customers</p>
             </div>
 
             <div class="card">
                 <h3>Low Stock</h3>
-                <h2>4</h2>
+                <h2 id="lowStock">0</h2>
                 <p>Products need restock</p>
             </div>
 
@@ -78,17 +78,20 @@
         <section class="table-section">
 
             <div class="section-title">
+
                 <h2>Recent Sales</h2>
 
                 <button class="view-btn">
                     View All
                 </button>
+
             </div>
 
 
             <table>
 
                 <thead>
+
                     <tr>
                         <th>Customer</th>
                         <th>Product</th>
@@ -96,33 +99,11 @@
                         <th>Amount</th>
                         <th>Date</th>
                     </tr>
+
                 </thead>
 
-                <tbody>
 
-                    <tr>
-                        <td>Rahul</td>
-                        <td>Laptop</td>
-                        <td>1</td>
-                        <td>₹45,000</td>
-                        <td>24 Aug 2026</td>
-                    </tr>
-
-                    <tr>
-                        <td>Aman</td>
-                        <td>Mouse</td>
-                        <td>2</td>
-                        <td>₹1,000</td>
-                        <td>23 Aug 2026</td>
-                    </tr>
-
-                    <tr>
-                        <td>Priya</td>
-                        <td>Keyboard</td>
-                        <td>1</td>
-                        <td>₹1,500</td>
-                        <td>22 Aug 2026</td>
-                    </tr>
+                <tbody id="recentSales">
 
                 </tbody>
 
@@ -131,6 +112,10 @@
         </section>
 
     </main>
+
+
+    <!-- Dashboard JavaScript -->
+    <script src="js/dashboard.js"></script>
 
 </body>
 
