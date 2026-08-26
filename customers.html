@@ -51,13 +51,13 @@
                 <h2>Add Customer</h2>
             </div>
 
-            <form>
+            <form  id="customerForm">
 
-                <input type="text" placeholder="Customer Name">
+                <input type="text" placeholder="Customer Name" id="customerName">
 
-                <input type="tel" placeholder="Phone Number">
+                <input type="tel" placeholder="Phone Number"  id="customerPhone">
 
-                <input type="email" placeholder="Email">
+                <input type="email" placeholder="Email" id="customerEmail">
 
                 <button type="submit" class="view-btn">
                     Add Customer
@@ -86,7 +86,7 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="customerTable">
 
                     <tr>
                         <td>Rahul</td>
@@ -116,7 +116,7 @@
         </section>
 
     </main>
-
+<script src="js/customer.js"></script>
 </body>
 
 </html>
