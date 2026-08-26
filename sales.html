@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Smart Shop Management</title>
+    <title>Sales - SmartShop</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -19,9 +19,9 @@
 
         <p class="admin">Shop Management</p>
 
-        <a href="index.html" class="menu active">Dashboard</a>
+        <a href="index.html" class="menu">Dashboard</a>
         <a href="products.html" class="menu">Products</a>
-        <a href="sales.html" class="menu">Sales</a>
+        <a href="sales.html" class="menu active">Sales</a>
         <a href="customers.html" class="menu">Customers</a>
         <a href="inventory.html" class="menu">Inventory</a>
 
@@ -35,8 +35,8 @@
         <header class="header">
 
             <div>
-                <h1>Dashboard</h1>
-                <p>Welcome to SmartShop Management System</p>
+                <h1>Sales</h1>
+                <p>Manage shop sales</p>
             </div>
 
             <button class="logout">Logout</button>
@@ -44,47 +44,40 @@
         </header>
 
 
-        <!-- Cards -->
-        <section class="cards">
+        <!-- Add Sale -->
+        <section class="table-section">
 
-            <div class="card">
-                <h3>Total Products</h3>
-                <h2>24</h2>
-                <p>Products available</p>
+            <div class="section-title">
+                <h2>Add Sale</h2>
             </div>
 
-            <div class="card">
-                <h3>Total Sales</h3>
-                <h2>₹45,500</h2>
-                <p>This month</p>
-            </div>
+            <form>
 
-            <div class="card">
-                <h3>Customers</h3>
-                <h2>18</h2>
-                <p>Registered customers</p>
-            </div>
+                <input type="text" placeholder="Customer Name">
 
-            <div class="card">
-                <h3>Low Stock</h3>
-                <h2>4</h2>
-                <p>Products need restock</p>
-            </div>
+                <input type="text" placeholder="Product Name">
+
+                <input type="number" placeholder="Quantity">
+
+                <input type="number" placeholder="Amount">
+
+                <input type="date">
+
+                <button type="submit" class="view-btn">
+                    Add Sale
+                </button>
+
+            </form>
 
         </section>
 
 
-        <!-- Recent Sales -->
-        <section class="table-section">
+        <!-- Sales List -->
+        <section class="table-section" style="margin-top: 25px;">
 
             <div class="section-title">
-                <h2>Recent Sales</h2>
-
-                <button class="view-btn">
-                    View All
-                </button>
+                <h2>Sales Records</h2>
             </div>
-
 
             <table>
 

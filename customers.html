@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customers - SmartShop</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2>SmartShop</h2>
+
+        <p class="admin">Shop Management</p>
+
+        <a href="index.html" class="menu">Dashboard</a>
+        <a href="products.html" class="menu">Products</a>
+        <a href="sales.html" class="menu">Sales</a>
+        <a href="customers.html" class="menu active">Customers</a>
+        <a href="inventory.html" class="menu">Inventory</a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="header">
+
+            <div>
+                <h1>Customers</h1>
+                <p>Manage your shop customers</p>
+            </div>
+
+            <button class="logout">Logout</button>
+
+        </header>
+
+
+        <!-- Add Customer -->
+        <section class="table-section">
+
+            <div class="section-title">
+                <h2>Add Customer</h2>
+            </div>
+
+            <form>
+
+                <input type="text" placeholder="Customer Name">
+
+                <input type="tel" placeholder="Phone Number">
+
+                <input type="email" placeholder="Email">
+
+                <button type="submit" class="view-btn">
+                    Add Customer
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- Customer List -->
+        <section class="table-section" style="margin-top: 25px;">
+
+            <div class="section-title">
+                <h2>Customer List</h2>
+            </div>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Total Purchases</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Rahul</td>
+                        <td>9876543210</td>
+                        <td>rahul@gmail.com</td>
+                        <td>₹45,000</td>
+                    </tr>
+
+                    <tr>
+                        <td>Aman</td>
+                        <td>9876501234</td>
+                        <td>aman@gmail.com</td>
+                        <td>₹3,500</td>
+                    </tr>
+
+                    <tr>
+                        <td>Priya</td>
+                        <td>9876512345</td>
+                        <td>priya@gmail.com</td>
+                        <td>₹1,500</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

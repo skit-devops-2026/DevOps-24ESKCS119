@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Products - SmartShop</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2>SmartShop</h2>
+
+        <p class="admin">Shop Management</p>
+
+        <a href="index.html" class="menu">Dashboard</a>
+        <a href="products.html" class="menu active">Products</a>
+        <a href="sales.html" class="menu">Sales</a>
+        <a href="customers.html" class="menu">Customers</a>
+        <a href="inventory.html" class="menu">Inventory</a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="header">
+
+            <div>
+                <h1>Products</h1>
+                <p>Manage your shop products</p>
+            </div>
+
+            <button class="logout">Logout</button>
+
+        </header>
+
+
+        <!-- Add Product -->
+        <section class="table-section">
+
+            <div class="section-title">
+                <h2>Add Product</h2>
+            </div>
+
+            <form>
+
+                <input type="text" placeholder="Product Name">
+
+                <input type="text" placeholder="Category">
+
+                <input type="number" placeholder="Price">
+
+                <input type="number" placeholder="Quantity">
+
+                <button type="submit" class="view-btn">
+                    Add Product
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- Product List -->
+        <section class="table-section" style="margin-top: 25px;">
+
+            <div class="section-title">
+                <h2>Product List</h2>
+            </div>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Laptop</td>
+                        <td>Electronics</td>
+                        <td>₹45,000</td>
+                        <td>5</td>
+                        <td>
+                            <button class="view-btn">Delete</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Mouse</td>
+                        <td>Electronics</td>
+                        <td>₹500</td>
+                        <td>20</td>
+                        <td>
+                            <button class="view-btn">Delete</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Keyboard</td>
+                        <td>Electronics</td>
+                        <td>₹1,500</td>
+                        <td>10</td>
+                        <td>
+                            <button class="view-btn">Delete</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
