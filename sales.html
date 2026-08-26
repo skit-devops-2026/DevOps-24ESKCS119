@@ -51,17 +51,17 @@
                 <h2>Add Sale</h2>
             </div>
 
-            <form>
+            <form id="salesForm">
 
-                <input type="text" placeholder="Customer Name">
+                <input type="text" placeholder="Customer Name" id="customerName">
 
-                <input type="text" placeholder="Product Name">
+                <input type="text" placeholder="Product Name"  id="saleProduct">
 
-                <input type="number" placeholder="Quantity">
+                <input type="number" placeholder="Quantity" id="saleQuantity">
 
-                <input type="number" placeholder="Amount">
+                <input type="number" placeholder="Amount" id="saleAmount">
 
-                <input type="date">
+                <input type="date" id="saleDate">
 
                 <button type="submit" class="view-btn">
                     Add Sale
@@ -91,31 +91,9 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody  id="salesTable">
 
-                    <tr>
-                        <td>Rahul</td>
-                        <td>Laptop</td>
-                        <td>1</td>
-                        <td>₹45,000</td>
-                        <td>24 Aug 2026</td>
-                    </tr>
-
-                    <tr>
-                        <td>Aman</td>
-                        <td>Mouse</td>
-                        <td>2</td>
-                        <td>₹1,000</td>
-                        <td>23 Aug 2026</td>
-                    </tr>
-
-                    <tr>
-                        <td>Priya</td>
-                        <td>Keyboard</td>
-                        <td>1</td>
-                        <td>₹1,500</td>
-                        <td>22 Aug 2026</td>
-                    </tr>
+                   
 
                 </tbody>
 
@@ -124,7 +102,7 @@
         </section>
 
     </main>
-
+        <script src="js/sales.js"></script>
 </body>
 
 </html>

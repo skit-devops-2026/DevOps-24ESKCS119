@@ -51,15 +51,15 @@
                 <h2>Add Product</h2>
             </div>
 
-            <form>
+            <form id="productForm">
 
-                <input type="text" placeholder="Product Name">
+                <input type="text" placeholder="Product Name" id="productName">
 
-                <input type="text" placeholder="Category">
+                <input type="text" placeholder="Category" id="category">
 
-                <input type="number" placeholder="Price">
+                <input type="number" placeholder="Price"  id="price">
 
-                <input type="number" placeholder="Quantity">
+                <input type="number" placeholder="Quantity" id="quantity">
 
                 <button type="submit" class="view-btn">
                     Add Product
@@ -89,37 +89,9 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody  id="productTable">
 
-                    <tr>
-                        <td>Laptop</td>
-                        <td>Electronics</td>
-                        <td>₹45,000</td>
-                        <td>5</td>
-                        <td>
-                            <button class="view-btn">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Mouse</td>
-                        <td>Electronics</td>
-                        <td>₹500</td>
-                        <td>20</td>
-                        <td>
-                            <button class="view-btn">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Keyboard</td>
-                        <td>Electronics</td>
-                        <td>₹1,500</td>
-                        <td>10</td>
-                        <td>
-                            <button class="view-btn">Delete</button>
-                        </td>
-                    </tr>
+                   
 
                 </tbody>
 
@@ -128,7 +100,7 @@
         </section>
 
     </main>
-
+<script src="js/script.js"></script>
 </body>
 
 </html>

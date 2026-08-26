@@ -228,3 +228,15 @@ form input:focus {
     outline: none;
     border-color: #2563eb;
 }
+.delete-btn {
+    padding: 8px 15px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #2563eb;
+}
