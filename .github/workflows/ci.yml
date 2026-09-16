@@ -1,8 +1,8 @@
-name: Node.js CI Pipeline
+name: Static Web CI Pipeline
 
 on:
   push:
-    branches: [ main, feature-* ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -18,10 +18,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
-
-    - name: Install Project Dependencies
-      run: npm install --prefer-offline --no-audit
 
     - name: Run Automated Test Suite
-      run: npm test || echo "Running dummy fallback test" && node test/app.test.js
+      run: node test/app.test.js
