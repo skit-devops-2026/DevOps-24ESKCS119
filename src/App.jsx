@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import Customers from './pages/Customers';  
+import Sales from './pages/Sales'; // सेल्स इम्पोर्ट किया
+import Inventory from './pages/Inventory'; // इन्वेंटरी इम्पोर्ट किया
 
 function App() {
   const [page, setPage] = useState("Dashboard");
@@ -52,11 +55,11 @@ function App() {
   );
 
   const stats = [
-    { title: "Total Customers", value: "0", color: "#3b82f6" },
+    { title: "Total Customers", value: "3", color: "#3b82f6" },
     { title: "Total Products", value: products.length, color: "#22c55e" },
     {
       title: "Daily Sales",
-      value: "₹0",
+      value: "₹3,500",
       color: "#a855f7",
     },
     {
@@ -198,12 +201,10 @@ function App() {
           </>
         )}
 
-        {page !== "Dashboard" && page !== "Products" && (
-          <div className="content-header">
-            <h1>{page}</h1>
-            <p>This section will be added next.</p>
-          </div>
-        )}
+        {/* लाइव कंपोनेंट्स रेंडरिंग */}
+        {page === "Customers" && <Customers />}
+        {page === "Sales Report" && <Sales />}
+        {page === "Inventory" && <Inventory />}
       </main>
     </div>
   );
