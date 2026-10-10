@@ -71,6 +71,9 @@ function Sales() {
         />
         <button type="submit">Record Sale</button>
       </form>
+            <button onClick={() => window.print()} className="delete-btn" style={{ backgroundColor: '#3b82f6' }}>
+  🖨️ Print Report
+</button>
 
       {/* Sales Table */}
       <div className="table-container" style={{ marginTop: '25px' }}>

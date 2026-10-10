@@ -10,6 +10,11 @@ function App() {
   const [products, setProducts] = useState(() => {
     return JSON.parse(localStorage.getItem("products") || "[]");
   });
+    // इसे products वाले स्टेट के ठीक नीचे पेस्ट कर:
+  const [customers, setCustomers] = useState(() => JSON.parse(localStorage.getItem("customers") || "[]"));
+  const [sales, setSales] = useState(() => JSON.parse(localStorage.getItem("sales") || "[]"));
+  const [inventory, setInventory] = useState(() => JSON.parse(localStorage.getItem("inventory") || "[]"));
+
 
   const [search, setSearch] = useState("");
   const [name, setName] = useState("");
@@ -20,6 +25,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(products));
   }, [products]);
+    // इसे products वाले useEffect के ठीक नीचे डाल:
+  useEffect(() => { localStorage.setItem("customers", JSON.stringify(customers)); }, [customers]);
+  useEffect(() => { localStorage.setItem("sales", JSON.stringify(sales)); }, [sales]);
+  useEffect(() => { localStorage.setItem("inventory", JSON.stringify(inventory)); }, [inventory]);
+
 
   const addProduct = (e) => {
     e.preventDefault();
@@ -54,21 +64,15 @@ function App() {
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
+    // इस पूरे stats एरे को पुराने वाले से बदल दे:
   const stats = [
-    { title: "Total Customers", value: "3", color: "#3b82f6" },
+    { title: "Total Customers", value: customers.length, color: "#3b82f6" },
     { title: "Total Products", value: products.length, color: "#22c55e" },
-    {
-      title: "Daily Sales",
-      value: "₹3,500",
-      color: "#a855f7",
-    },
-    {
-      title: "Out of Stock Items",
-      value: products.filter((p) => p.quantity === 0).length,
-      color: "#ef4444",
-    },
+    { title: "Daily Sales", value: `₹${sales.reduce((sum, item) => sum + (item.qty * item.price), 0)}`, color: "#a855f7" },
+    { title: "Out of Stock Items", value: products.filter((p) => p.quantity === 0).length, color: "#ef4444" },
   ];
 
+   
   const pages = ["Dashboard", "Customers", "Products", "Sales Report", "Inventory"];
 
   return (
@@ -94,6 +98,12 @@ function App() {
           <>
             <header className="content-header">
               <h1>Dashboard Overview</h1>
+              {products.some(p => p.quantity <= 3) && (
+  <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontWeight: 'bold' }}>
+    ⚠️ Warning: Some products are running low on stock! Check Inventory.
+  </div>
+)}
+
               <p>Welcome back! Here is what's happening in your shop today.</p>
             </header>
 
@@ -201,10 +211,11 @@ function App() {
           </>
         )}
 
-        {/* लाइव कंपोनेंट्स रेंडरिंग */}
-        {page === "Customers" && <Customers />}
-        {page === "Sales Report" && <Sales />}
-        {page === "Inventory" && <Inventory />}
+         {/* पुराना हटाकर सिर्फ ये तीन लाइनें बदल दे */}
+  {page === "Customers" && <Customers customers={customers} setCustomers={setCustomers} />}
+  {page === "Sales Report" && <Sales sales={sales} setSales={setSales} />}
+  {page === "Inventory" && <Inventory inventory={inventory} setInventory={setInventory} />}
+
       </main>
     </div>
   );
