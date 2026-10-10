@@ -15,6 +15,59 @@ function Sales() {
   // लाइव टोटल कमाई कैलकुलेट करना
   const totalRevenue = sales.reduce((sum, item) => sum + (item.qty * item.price), 0);
 
+    // इसे इनपुट स्टेट्स (useState) के ठीक नीचे पेस्ट करो:
+  React.useEffect(() => {
+    let barcodeBuffer = "";
+    let lastKeyTime = Date.now();
+
+    const handleKeyPress = (e) => {
+      const currentTime = Date.now();
+      
+      // बारकोड स्कैनर बहुत तेजी से टाइप करता है (दो कीज के बीच 30ms से कम का समय)
+      if (currentTime - lastKeyTime > 50) {
+        barcodeBuffer = ""; // अगर धीरे-धीरे टाइप हो रहा है तो बफर साफ कर दो
+      }
+
+      lastKeyTime = currentTime;
+
+      if (e.key === 'Enter') {
+        if (barcodeBuffer.length > 0) {
+          e.preventDefault();
+          console.log("Scanned Barcode:", barcodeBuffer);
+          
+          // यहाँ हम आपके Products (LocalStorage) से मैच करेंगे
+          const savedProducts = JSON.parse(localStorage.getItem("products") || "[]");
+          
+          // मान लेते हैं प्रोडक्ट के नाम या किसी फील्ड में बारकोड कोड छुपा है
+          // या तू टेस्टिंग के लिए सीधे प्रोडक्ट का नाम भी स्कैन करा सकता है
+          const matchedProduct = savedProducts.find(p => 
+            p.name.toLowerCase() === barcodeBuffer.toLowerCase() || p.id.toString() === barcodeBuffer
+          );
+
+          if (matchedProduct) {
+            setProductName(matchedProduct.name);
+            setPrice(matchedProduct.price);
+            setQuantity(1); // डिफॉल्ट क्वांटिटी 1 सेट कर दी
+            alert(`🎉 Product Found: ${matchedProduct.name}`);
+          } else {
+            alert(`❌ Barcode (${barcodeBuffer}) Not Found in Products!`);
+          }
+          
+          barcodeBuffer = ""; // काम होने के बाद बफर खाली
+        }
+      } else {
+        // फालतू कीज (जैसे Shift, Control) को इग्नोर करके सिर्फ कैरेक्टर्स जोड़ो
+        if (e.key.length === 1) {
+          barcodeBuffer += e.key;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []); // खाली एरे ताकि यह सिर्फ एक बार लोड हो
+
+
   const handleAddSale = (e) => {
     e.preventDefault();
     if (!productName.trim() || !quantity || !price) {

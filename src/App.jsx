@@ -3,6 +3,9 @@ import "./App.css";
 import Customers from './pages/Customers';  
 import Sales from './pages/Sales'; // सेल्स इम्पोर्ट किया
 import Inventory from './pages/Inventory'; // इन्वेंटरी इम्पोर्ट किया
+import Suppliers from './pages/Suppliers';
+import Settings from './pages/Settings';
+
 
 function App() {
   const [page, setPage] = useState("Dashboard");
@@ -14,6 +17,10 @@ function App() {
   const [customers, setCustomers] = useState(() => JSON.parse(localStorage.getItem("customers") || "[]"));
   const [sales, setSales] = useState(() => JSON.parse(localStorage.getItem("sales") || "[]"));
   const [inventory, setInventory] = useState(() => JSON.parse(localStorage.getItem("inventory") || "[]"));
+    const [suppliers, setSuppliers] = useState(() => JSON.parse(localStorage.getItem("suppliers") || "[]"));
+
+  useEffect(() => { localStorage.setItem("suppliers", JSON.stringify(suppliers)); }, [suppliers]);
+
 
 
   const [search, setSearch] = useState("");
@@ -73,7 +80,7 @@ function App() {
   ];
 
    
-  const pages = ["Dashboard", "Customers", "Products", "Sales Report", "Inventory"];
+    const pages = ["Dashboard", "Customers", "Products", "Sales Report", "Inventory", "Suppliers", "Settings"];
 
   return (
     <div className="app-container">
@@ -215,7 +222,11 @@ function App() {
   {page === "Customers" && <Customers customers={customers} setCustomers={setCustomers} />}
   {page === "Sales Report" && <Sales sales={sales} setSales={setSales} />}
   {page === "Inventory" && <Inventory inventory={inventory} setInventory={setInventory} />}
+          {page === "Suppliers" && <Suppliers suppliers={suppliers} setSuppliers={setSuppliers} />}
+        {page === "Settings" && <Settings />}
+       
 
+   
       </main>
     </div>
   );
