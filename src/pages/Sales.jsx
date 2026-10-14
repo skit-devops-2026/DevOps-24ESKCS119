@@ -1,160 +1,194 @@
 import React, { useState } from 'react';
 
-function Sales() {
-  // सेल्स का डेटा (स्टेट)
-  const [sales, setSales] = useState([
-    { id: 1, product: 'Wireless Mouse', qty: 2, price: 500, date: '2026-10-08' },
-    { id: 2, product: 'Mechanical Keyboard', qty: 1, price: 2500, date: '2026-10-09' }
-  ]);
+const styles = {
+  container: { color: '#1e293b', fontFamily: 'system-ui, sans-serif', padding: '16px', maxWidth: '1400px', margin: '0 auto' },
+  header: { borderBottom: '2px solid #e2e8f0', paddingBottom: '16px', marginBottom: '24px' },
+  title: { fontSize: '26px', fontWeight: '800', color: '#0f172a', margin: '0' },
+  posLayout: { display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '32px' },
+  section: { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px', height: 'fit-content', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' },
+  sectionTitle: { fontSize: '15px', fontWeight: '700', color: '#1e293b', margin: '0 0 16px 0', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' },
+  productGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px' },
+  
+  // प्रीमियम व्हाइट आइटम कार्ड
+  itemCard: { backgroundColor: '#ffffff', border: '1px solid #e2e8f0', padding: '16px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' },
+  itemName: { fontSize: '14px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' },
+  
+  // साफ़ सुथरा इनवॉइस कार्ट
+  cartRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #f1f5f9', fontSize: '13px' },
+  qtyBtn: { width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', margin: '0 8px', color: '#0f172a', transition: 'background 0.2s' },
+  totalBox: { marginTop: '20px', paddingTop: '16px', borderTop: '2px dashed #e2e8f0' },
+  printButton: { width: '100%', backgroundColor: '#10b981', color: '#ffffff', border: 'none', borderRadius: '10px', padding: '14px', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', marginTop: '16px', transition: 'background 0.2s' }
+};
+export default function Sales({ products = [], setProducts, onNewSale }) {
+  const [cart, setCart] = useState([]);
 
-  // नए सेल्स इनपुट की स्टेट्स
-  const [productName, setProductName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-
-  // लाइव टोटल कमाई कैलकुलेट करना
-  const totalRevenue = sales.reduce((sum, item) => sum + (item.qty * item.price), 0);
-
-    // इसे इनपुट स्टेट्स (useState) के ठीक नीचे पेस्ट करो:
-  React.useEffect(() => {
-    let barcodeBuffer = "";
-    let lastKeyTime = Date.now();
-
-    const handleKeyPress = (e) => {
-      const currentTime = Date.now();
-      
-      // बारकोड स्कैनर बहुत तेजी से टाइप करता है (दो कीज के बीच 30ms से कम का समय)
-      if (currentTime - lastKeyTime > 50) {
-        barcodeBuffer = ""; // अगर धीरे-धीरे टाइप हो रहा है तो बफर साफ कर दो
-      }
-
-      lastKeyTime = currentTime;
-
-      if (e.key === 'Enter') {
-        if (barcodeBuffer.length > 0) {
-          e.preventDefault();
-          console.log("Scanned Barcode:", barcodeBuffer);
-          
-          // यहाँ हम आपके Products (LocalStorage) से मैच करेंगे
-          const savedProducts = JSON.parse(localStorage.getItem("products") || "[]");
-          
-          // मान लेते हैं प्रोडक्ट के नाम या किसी फील्ड में बारकोड कोड छुपा है
-          // या तू टेस्टिंग के लिए सीधे प्रोडक्ट का नाम भी स्कैन करा सकता है
-          const matchedProduct = savedProducts.find(p => 
-            p.name.toLowerCase() === barcodeBuffer.toLowerCase() || p.id.toString() === barcodeBuffer
-          );
-
-          if (matchedProduct) {
-            setProductName(matchedProduct.name);
-            setPrice(matchedProduct.price);
-            setQuantity(1); // डिफॉल्ट क्वांटिटी 1 सेट कर दी
-            alert(`🎉 Product Found: ${matchedProduct.name}`);
-          } else {
-            alert(`❌ Barcode (${barcodeBuffer}) Not Found in Products!`);
-          }
-          
-          barcodeBuffer = ""; // काम होने के बाद बफर खाली
-        }
-      } else {
-        // फालतू कीज (जैसे Shift, Control) को इग्नोर करके सिर्फ कैरेक्टर्स जोड़ो
-        if (e.key.length === 1) {
-          barcodeBuffer += e.key;
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []); // खाली एरे ताकि यह सिर्फ एक बार लोड हो
-
-
-  const handleAddSale = (e) => {
-    e.preventDefault();
-    if (!productName.trim() || !quantity || !price) {
-      alert("Please fill all fields");
+  const addToCart = (product) => {
+    const currentProduct = products.find(p => p.id === product.id);
+    if (!currentProduct || currentProduct.stock <= 0) {
+      alert("यह आइटम स्टॉक में नहीं है!");
       return;
     }
 
-    setSales([
-      ...sales,
-      {
-        id: Date.now(),
-        product: productName.trim(),
-        qty: Number(quantity),
-        price: Number(price),
-        date: new Date().toISOString().split('T')[0] // आज की तारीख
+    const exist = cart.find(item => item.id === product.id);
+    if (exist) {
+      if (exist.qty >= currentProduct.stock) {
+        alert("माफ़ कीजिये, इससे ज़्यादा स्टॉक उपलब्ध नहीं है!");
+        return;
       }
-    ]);
-
-    setProductName('');
-    setQuantity('');
-    setPrice('');
+      setCart(cart.map(item => item.id === product.id ? { ...exist, qty: exist.qty + 1 } : item));
+    } else {
+      setCart([...cart, { ...product, qty: 1 }]);
+    }
   };
 
+  const updateQty = (id, change) => {
+    const currentProduct = products.find(p => p.id === id);
+    setCart(currentCart => 
+      currentCart.map(item => {
+        if (item.id === id) {
+          const newQty = item.qty + change;
+          if (newQty <= 0) return null;
+          if (newQty > currentProduct.stock) return item;
+          return { ...item, qty: newQty };
+        }
+        return item;
+      }).filter(Boolean)
+    );
+  };
+
+  const handleCheckoutPrint = () => {
+    if (cart.length === 0) return;
+
+    const currentTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+    // 1. मास्टर स्टॉक में से क्वांटिटी माइनस करना
+    const updatedProducts = products.map(pItem => {
+      const cartItem = cart.find(cItem => cItem.id === pItem.id);
+      return cartItem ? { ...pItem, stock: pItem.stock - cartItem.qty } : pItem;
+    });
+    setProducts(updatedProducts);
+
+    // 2. डैशबोर्ड के डेली सेल्स काउंटर में अमाउंट जोड़ने के लिए कॉलबैक (अगर प्रोप्स में भेजा गया हो)
+    if (onNewSale) {
+      onNewSale(currentTotal);
+    }
+
+    // प्रिंटर रसीद विंडो खोलना
+    const printWindow = window.open('', '_blank', 'width=600,height=600');
+    let itemsHTML = '';
+    cart.forEach(item => {
+      itemsHTML += `<div style="display:flex; justify-content:space-between; font-size:14px; margin:6px 0;"><span>${item.name} (x${item.qty})</span><span>₹${item.price * item.qty}</span></div>`;
+    });
+
+    const fullReceiptHTML = `
+      <html>
+        <body style="margin:20px; font-family:monospace; color: #111;">
+          <div style="text-align:center; max-width:300px; margin:0 auto; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
+            <h2 style="margin:0 0 5px 0;">🏪 NEXUS SHOP</h2>
+            <small style="color:#666;">Live POS Billing</small>
+            <hr style="border-top: 1px dashed #bbb; margin: 15px 0;">
+            ${itemsHTML}
+            <hr style="border-top: 1px dashed #bbb; margin: 15px 0;">
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px;"><span>GRAND TOTAL:</span><span>₹${currentTotal}</span></div>
+          </div>
+          <script>window.onload = function() { window.print(); window.close(); }</script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(fullReceiptHTML);
+    printWindow.document.close();
+    
+    // कार्ट खाली करें
+    setCart([]);
+    alert("बिल सफलतापूर्वक कट गया है और स्टॉक अपडेट हो गया है!");
+  };
+
+  const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
   return (
-    <>
-      <header className="content-header">
-        <h1>Sales Report</h1>
-        <p>Track your shop sales and total earnings.</p>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h1 style={styles.title}>🛒 Live POS Billing Counter</h1>
       </header>
+      
+      <div style={styles.posLayout}>
+        {/* Left: Items list box */}
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>📦 Available Items in Master Stock</h2>
+          <div style={styles.productGrid}>
+            {products.map(p => {
+              const isOutOfStock = p.stock <= 0;
+              return (
+                <div 
+                  key={p.id} 
+                  onClick={() => !isOutOfStock && addToCart(p)} 
+                  style={{ 
+                    ...styles.itemCard,
+                    opacity: isOutOfStock ? 0.5 : 1,
+                    cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                    backgroundColor: isOutOfStock ? '#f8fafc' : '#ffffff'
+                  }}
+                >
+                  <h4 style={styles.itemName}>{p.name}</h4>
+                  <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                    <span style={{ color: '#10b981', fontWeight: '700' }}>₹{p.price}</span>
+                    <span style={{ 
+                      color: isOutOfStock ? '#ef4444' : '#64748b', 
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      backgroundColor: isOutOfStock ? '#fef2f2' : '#f1f5f9',
+                      padding: '2px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      {isOutOfStock ? 'Out of stock' : `Stock: ${p.stock}`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-      {/* Total Earnings Card */}
-      <div className="chart-box" style={{ marginBottom: '20px', background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-        <h2 style={{ color: '#16a34a' }}>Total Revenue: ₹{totalRevenue}</h2>
+        {/* Right: Cart Invoice Invoice layout */}
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>📋 Customer Invoice Cart</h2>
+          {cart.length === 0 ? (
+            <p style={{ fontSize: '14px', color: '#64748b', textAlign: 'center', padding: '32px 0' }}>
+              Your cart is empty. Click items to add.
+            </p>
+          ) : (
+            <div>
+              {cart.map(item => (
+                <div key={item.id} style={styles.cartRow}>
+                  <div>
+                    <span style={{ fontWeight: '600', color: '#0f172a', display: 'block' }}>{item.name}</span>
+                    <small style={{ color: '#64748b' }}>₹{item.price} per pc</small>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <button onClick={() => updateQty(item.id, -1)} style={styles.qtyBtn}>-</button>
+                    <span style={{ fontWeight: '700', fontSize: '14px', minWidth: '20px', textAlign: 'center' }}>{item.qty}</span>
+                    <button onClick={() => updateQty(item.id, 1)} style={styles.qtyBtn}>+</button>
+                  </div>
+                  <span style={{ fontWeight: '700', color: '#0f172a', minWidth: '60px', textAlign: 'right' }}>
+                    ₹{item.price * item.qty}
+                  </span>
+                </div>
+              ))}
+              
+              <div style={styles.totalBox}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>
+                  <span>Grand Total:</span>
+                  <span style={{ color: '#10b981' }}>₹{totalAmount}</span>
+                </div>
+                <button onClick={handleCheckoutPrint} style={styles.printButton}>
+                  🖨️ Print Invoice & Deduct Stock
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Add Sale Form */}
-      <form onSubmit={handleAddSale} className="product-form">
-        <input 
-          placeholder="Product Name" 
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-        />
-        <input 
-          type="number"
-          placeholder="Quantity" 
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-        <input 
-          type="number"
-          placeholder="Price per unit" 
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-        <button type="submit">Record Sale</button>
-      </form>
-            <button onClick={() => window.print()} className="delete-btn" style={{ backgroundColor: '#3b82f6' }}>
-  🖨️ Print Report
-</button>
-
-      {/* Sales Table */}
-      <div className="table-container" style={{ marginTop: '25px' }}>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sales.map((sale) => (
-              <tr key={sale.id}>
-                <td>{sale.date}</td>
-                <td>{sale.product}</td>
-                <td>{sale.qty}</td>
-                <td>₹{sale.price}</td>
-                <td>₹{sale.qty * sale.price}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+    </div>
   );
 }
-
-export default Sales;

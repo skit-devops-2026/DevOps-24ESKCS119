@@ -1,235 +1,112 @@
-import { useState, useEffect } from "react";
-import "./App.css";
-import Customers from './pages/Customers';  
-import Sales from './pages/Sales'; // सेल्स इम्पोर्ट किया
-import Inventory from './pages/Inventory'; // इन्वेंटरी इम्पोर्ट किया
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
+import Dashboard from './pages/Dashboard';
+import Customers from './pages/Customers';
+import Inventory from './pages/Inventory';
+import Sales from './pages/Sales';
 import Suppliers from './pages/Suppliers';
 import Settings from './pages/Settings';
 
+export default function App() {
+  const [activePage, setActivePage] = useState('dashboard');
 
-function App() {
-  const [page, setPage] = useState("Dashboard");
-
-  const [products, setProducts] = useState(() => {
-    return JSON.parse(localStorage.getItem("products") || "[]");
+  // 1. ⚡ स्टोर नाम की मास्टर स्टेट (लोकल स्टोरेज लोडर्स के साथ)
+  const [storeName, setStoreName] = useState(() => {
+    const saved = localStorage.getItem('nexus_store_name');
+    return saved || 'NEXUS SHOP';
   });
-    // इसे products वाले स्टेट के ठीक नीचे पेस्ट कर:
-  const [customers, setCustomers] = useState(() => JSON.parse(localStorage.getItem("customers") || "[]"));
-  const [sales, setSales] = useState(() => JSON.parse(localStorage.getItem("sales") || "[]"));
-  const [inventory, setInventory] = useState(() => JSON.parse(localStorage.getItem("inventory") || "[]"));
-    const [suppliers, setSuppliers] = useState(() => JSON.parse(localStorage.getItem("suppliers") || "[]"));
 
-  useEffect(() => { localStorage.setItem("suppliers", JSON.stringify(suppliers)); }, [suppliers]);
+  // 2. प्रोडक्ट्स मास्टर स्टेट
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem('nexus_products');
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  // 3. कस्टमर्स मास्टर स्टेट
+  const [customers, setCustomers] = useState(() => {
+    const saved = localStorage.getItem('nexus_customers');
+    return saved ? JSON.parse(saved) : [
+      { id: 1, name: 'Rahul', phone: '9876543210', email: 'rahul@gmail.com', purchases: 45000 },
+      { id: 2, name: 'Aman', phone: '9876501234', email: 'aman@gmail.com', purchases: 3500 },
+      { id: 3, name: 'Priya', phone: '9876512345', email: 'priya@gmail.com', purchases: 1500 }
+    ];
+  });
 
+  // 4. सेल्स हिस्ट्री मास्टर स्टेट
+  const [sales, setSales] = useState(() => {
+    const saved = localStorage.getItem('nexus_sales');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  const [search, setSearch] = useState("");
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
+  // 5. सप्लायर्स मास्टर स्टेट
+  const [suppliers, setSuppliers] = useState(() => {
+    const saved = localStorage.getItem('nexus_suppliers');
+    return saved ? JSON.parse(saved) : [];
+  });
+  // 💾 जब भी कोई डेटा बदलेगा, ये इफेक्ट्स उसे तुरंत ब्राउज़र मेमोरी में परमानेंट सेव कर देंगे:
+  useEffect(() => {
+    localStorage.setItem('nexus_store_name', storeName);
+  }, [storeName]);
 
   useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
+    localStorage.setItem('nexus_products', JSON.stringify(products));
   }, [products]);
-    // इसे products वाले useEffect के ठीक नीचे डाल:
-  useEffect(() => { localStorage.setItem("customers", JSON.stringify(customers)); }, [customers]);
-  useEffect(() => { localStorage.setItem("sales", JSON.stringify(sales)); }, [sales]);
-  useEffect(() => { localStorage.setItem("inventory", JSON.stringify(inventory)); }, [inventory]);
 
+  useEffect(() => {
+    localStorage.setItem('nexus_customers', JSON.stringify(customers));
+  }, [customers]);
 
-  const addProduct = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    localStorage.setItem('nexus_sales', JSON.stringify(sales));
+  }, [sales]);
 
-    if (!name.trim() || !category.trim() || price === "" || quantity === "") {
-      alert("Please fill all fields");
-      return;
+  useEffect(() => {
+    localStorage.setItem('nexus_suppliers', JSON.stringify(suppliers));
+  }, [suppliers]);
+
+  // सेल्स काउंटर पर बिल कटते ही डैशबोर्ड अर्निंग्स अपडेट करने का लाइव फंक्शन
+  const handleNewSale = (amount) => {
+    const newSaleRecord = {
+      id: Date.now(),
+      amount: parseFloat(amount),
+      date: new Date().toLocaleDateString()
+    };
+    setSales([...sales, newSaleRecord]);
+  };
+  const renderPage = () => {
+    switch (activePage) {
+      case 'dashboard': 
+        return <Dashboard products={products} customers={customers} sales={sales} storeName={storeName} />;
+      
+      case 'customers': 
+        return <Customers customers={customers} setCustomers={setCustomers} />;
+      
+      case 'inventory': 
+        return <Inventory products={products} setProducts={setProducts} />;
+      
+      case 'sales': 
+        return <Sales products={products} setProducts={setProducts} onNewSale={handleNewSale} />;
+      
+      case 'suppliers': 
+        return <Suppliers suppliers={suppliers} setSuppliers={setSuppliers} products={products} />;
+      
+      case 'settings': 
+        return <Settings storeName={storeName} setStoreName={setStoreName} />;
+      
+      default: 
+        return <Dashboard products={products} customers={customers} sales={sales} storeName={storeName} />;
     }
-
-    setProducts([
-      ...products,
-      {
-        id: Date.now(),
-        name: name.trim(),
-        category: category.trim(),
-        price: Number(price),
-        quantity: Number(quantity),
-      },
-    ]);
-
-    setName("");
-    setCategory("");
-    setPrice("");
-    setQuantity("");
   };
-
-  const deleteProduct = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
-  };
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-    // इस पूरे stats एरे को पुराने वाले से बदल दे:
-  const stats = [
-    { title: "Total Customers", value: customers.length, color: "#3b82f6" },
-    { title: "Total Products", value: products.length, color: "#22c55e" },
-    { title: "Daily Sales", value: `₹${sales.reduce((sum, item) => sum + (item.qty * item.price), 0)}`, color: "#a855f7" },
-    { title: "Out of Stock Items", value: products.filter((p) => p.quantity === 0).length, color: "#ef4444" },
-  ];
-
-   
-    const pages = ["Dashboard", "Customers", "Products", "Sales Report", "Inventory", "Suppliers", "Settings"];
 
   return (
-    <div className="app-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">ShopAdmin</div>
-
-        <nav className="sidebar-nav">
-          {pages.map((item) => (
-            <button
-              key={item}
-              className={`nav-item ${page === item ? "active" : ""}`}
-              onClick={() => setPage(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      <main className="main-content">
-        {page === "Dashboard" && (
-          <>
-            <header className="content-header">
-              <h1>Dashboard Overview</h1>
-              {products.some(p => p.quantity <= 3) && (
-  <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontWeight: 'bold' }}>
-    ⚠️ Warning: Some products are running low on stock! Check Inventory.
-  </div>
-)}
-
-              <p>Welcome back! Here is what's happening in your shop today.</p>
-            </header>
-
-            <div className="stats-grid">
-              {stats.map((item) => (
-                <div key={item.title} className="stat-card">
-                  <div className="stat-info">
-                    <p className="stat-title">{item.title}</p>
-                    <p className="stat-value">{item.value}</p>
-                  </div>
-                  <div
-                    className="stat-badge"
-                    style={{ backgroundColor: item.color }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="chart-box">
-              <h2>Inventory Overview</h2>
-              <p>Products in stock: {products.filter((p) => p.quantity > 0).length}</p>
-              <p>Products out of stock: {products.filter((p) => p.quantity === 0).length}</p>
-            </div>
-          </>
-        )}
-
-        {page === "Products" && (
-          <>
-            <header className="content-header">
-              <h1>Products Management</h1>
-              <p>Add, search and manage shop products.</p>
-            </header>
-
-            <form onSubmit={addProduct} className="product-form">
-              <input
-                placeholder="Product Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <input
-                placeholder="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-              <input
-                type="number"
-                min="0"
-                placeholder="Price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-              <input
-                type="number"
-                min="0"
-                placeholder="Quantity"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
-              <button type="submit">Add Product</button>
-            </form>
-
-            <input
-              className="search-input"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td>{product.category}</td>
-                      <td>₹{product.price}</td>
-                      <td>{product.quantity}</td>
-                      <td>
-                        <button
-                          className="delete-btn"
-                          onClick={() => deleteProduct(product.id)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredProducts.length === 0 && (
-                    <tr>
-                      <td colSpan="5">No products found.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-
-         {/* पुराना हटाकर सिर्फ ये तीन लाइनें बदल दे */}
-  {page === "Customers" && <Customers customers={customers} setCustomers={setCustomers} />}
-  {page === "Sales Report" && <Sales sales={sales} setSales={setSales} />}
-  {page === "Inventory" && <Inventory inventory={inventory} setInventory={setInventory} />}
-          {page === "Suppliers" && <Suppliers suppliers={suppliers} setSuppliers={setSuppliers} />}
-        {page === "Settings" && <Settings />}
-       
-
-   
-      </main>
+    <div style={{ display: 'flex', backgroundColor: '#f8fafc', minHeight: '100vh', margin: 0, padding: 0 }}>
+      {/* ⚡ साइडबार को भी मास्टर स्टोर नेम प्रोप दे दिया गया है */}
+      <Sidebar activePage={activePage} setActivePage={setActivePage} storeName={storeName} />
+      
+      {/* मुख्य कंटेंट रेंडरर बॉक्स */}
+      <div style={{ flex: 1, padding: '24px', overflowY: 'auto', boxSizing: 'border-box' }}>
+        {renderPage()}
+      </div>
     </div>
   );
 }
-
-export default App;
