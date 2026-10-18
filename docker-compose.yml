@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  react-app:
+    build: .
+    ports:
+      - "8080:80"
+    container_name: react-frontend-container
