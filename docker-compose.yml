@@ -1,8 +1,12 @@
 version: '3.8'
-
 services:
   react-app:
     build: .
     ports:
-      - "8080:80"
-    container_name: react-frontend-container
+      - "9000:80"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
