@@ -1,4 +1,8 @@
-# Logs
+node_modules/
+venv/
+.env
+dist/
+__pycache__/# Logs
 logs
 *.log
 npm-debug.log*
