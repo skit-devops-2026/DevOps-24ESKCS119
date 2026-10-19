@@ -1,6 +1,10 @@
 # Live Deployment URL
 👉 https://devops-24eskcs119.onrender.com
 
+* **Production Sales Endpoint** https://digital-bank-dmfu.onrender.com/Sales
+* **Local Deployment URL:** http://localhost:9000
+* **Local Sales Endpoint:** http://localhost:9000/Sales
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
