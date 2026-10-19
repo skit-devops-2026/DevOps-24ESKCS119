@@ -1,3 +1,6 @@
+- Docker image: https://hub.docker.com/r/divyanshugupta063/devops-24eskcs119
+- Pull command: `docker pull divyanshugupta063/devops-24eskcs119:latest`
+
 # Live Deployment URL
 👉 https://devops-24eskcs119.onrender.com
 
