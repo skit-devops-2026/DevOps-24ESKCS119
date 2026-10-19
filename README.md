@@ -1,12 +1,10 @@
-- Docker image: https://hub.docker.com/r/divyanshugupta063/devops-24eskcs119
-- Pull command: `docker pull divyanshugupta063/devops-24eskcs119:latest`
-
 # Live Deployment URL
-👉 https://devops-24eskcs119.onrender.com
 
-* **Production Sales Endpoint** https://digital-bank-dmfu.onrender.com/Sales
-* **Local Deployment URL:** http://localhost:9000
-* **Local Sales Endpoint:** http://localhost:9000/Sales
+https://devops-24eskcs119.onrender.com
+
+- **Docker image:** https://hub.docker.com/r/divyanshugupta063/devops-24eskcs119
+- **Pull command:** `docker pull divyanshugupta063/devops-24eskcs119:latest`
+- **Local Deployment URL:** http://localhost:9000
 
 # React + Vite
 
@@ -27,8 +25,4 @@ You can also try [the experimental native React Compiler support in plugin-react
 ## Expanding the Oxlint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
-this is the new pull request
-this is third commit
-CI AND JENKINS FILE 
-This is the feature -new branch
-This is the third pull request
+
