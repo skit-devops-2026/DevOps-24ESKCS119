@@ -19,5 +19,5 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Run Automated Test Suite
-      run: node test/app.test.js
+     - name: Run Automated Test Suite
+     run: node test/app.test.cjs
