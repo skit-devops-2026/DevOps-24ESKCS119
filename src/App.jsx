@@ -10,69 +10,74 @@ import Settings from './pages/Settings';
 export default function App() {
   const [activePage, setActivePage] = useState('dashboard');
 
-  // 1. ⚡ स्टोर नाम की मास्टर स्टेट (लोकल स्टोरेज लोडर्स के साथ)
-  const [storeName, setStoreName] = useState(() => {
-    const saved = localStorage.getItem('nexus_store_name');
-    return saved || 'NEXUS SHOP';
-  });
+  //  MASTER STATES (शुरुआत में खाली एरे रहेंगे, डेटाबेस से लोड होंगे)
+  const [storeName, setStoreName] = useState('NEXUS SHOP');
+  const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
 
-  // 2. प्रोडक्ट्स मास्टर स्टेट
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('nexus_products');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const API_BASE_URL = 'http://localhost:5000/api';
 
-  // 3. कस्टमर्स मास्टर स्टेट
-  const [customers, setCustomers] = useState(() => {
-    const saved = localStorage.getItem('nexus_customers');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, name: 'Rahul', phone: '9876543210', email: 'rahul@gmail.com', purchases: 45000 },
-      { id: 2, name: 'Aman', phone: '9876501234', email: 'aman@gmail.com', purchases: 3500 },
-      { id: 3, name: 'Priya', phone: '9876512345', email: 'priya@gmail.com', purchases: 1500 }
-    ];
-  });
+  // ⚡ ऐप लोड होते ही सारा डेटा MongoDB डेटाबेस से खींच कर लाने के लिए सिंगल इफेक्ट
+  useEffect(() => {
+    // 1. लोड प्रोडक्ट्स
+    fetch(`${API_BASE_URL}/products`)
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error("Error loading products:", err));
 
-  // 4. सेल्स हिस्ट्री मास्टर स्टेट
-  const [sales, setSales] = useState(() => {
-    const saved = localStorage.getItem('nexus_sales');
-    return saved ? JSON.parse(saved) : [];
-  });
+    // 2. लोड कस्टमर्स
+    fetch(`${API_BASE_URL}/customers`)
+      .then(res => res.json())
+      .then(data => setCustomers(data))
+      .catch(err => console.error("Error loading customers:", err));
 
-  // 5. सप्लायर्स मास्टर स्टेट
-  const [suppliers, setSuppliers] = useState(() => {
-    const saved = localStorage.getItem('nexus_suppliers');
-    return saved ? JSON.parse(saved) : [];
-  });
-  // 💾 जब भी कोई डेटा बदलेगा, ये इफेक्ट्स उसे तुरंत ब्राउज़र मेमोरी में परमानेंट सेव कर देंगे:
+    // 3. लोड सेल्स हिस्ट्री
+    fetch(`${API_BASE_URL}/sales`)
+      .then(res => res.json())
+      .then(data => setSales(data))
+      .catch(err => console.error("Error loading sales:", err));
+
+    // 4. लोड सप्लायर्स
+    fetch(`${API_BASE_URL}/suppliers`)
+      .then(res => res.json())
+      .then(data => setSuppliers(data))
+      .catch(err => console.error("Error loading suppliers:", err));
+
+    // स्टोर नाम लोकलस्टोरेज में ही छोड़ देते हैं क्योंकि यह छोटा मेटाडेटा है
+    const savedStoreName = localStorage.getItem('nexus_store_name');
+    if (savedStoreName) setStoreName(savedStoreName);
+  }, []);
+
+  // स्टोर नाम जब भी बदलेगा लोकलस्टोरेज में रहेगा (सेटिंग्स के लिए आसान रहेगा)
   useEffect(() => {
     localStorage.setItem('nexus_store_name', storeName);
   }, [storeName]);
 
-  useEffect(() => {
-    localStorage.setItem('nexus_products', JSON.stringify(products));
-  }, [products]);
 
-  useEffect(() => {
-    localStorage.setItem('nexus_customers', JSON.stringify(customers));
-  }, [customers]);
-
-  useEffect(() => {
-    localStorage.setItem('nexus_sales', JSON.stringify(sales));
-  }, [sales]);
-
-  useEffect(() => {
-    localStorage.setItem('nexus_suppliers', JSON.stringify(suppliers));
-  }, [suppliers]);
-
-  // सेल्स काउंटर पर बिल कटते ही डैशबोर्ड अर्निंग्स अपडेट करने का लाइव फंक्शन
-  const handleNewSale = (amount) => {
+  // 💳 सेल्स काउंटर पर बिल कटते ही डेटाबेस में एंट्री करने का लाइव फंक्शन
+  const handleNewSale = async (amount) => {
     const newSaleRecord = {
-      id: Date.now(),
       amount: parseFloat(amount),
       date: new Date().toLocaleDateString()
     };
-    setSales([...sales, newSaleRecord]);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/sales`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSaleRecord)
+      });
+      const savedSale = await response.json();
+      
+      // लाइव स्क्रीन अपडेट
+      setSales([...sales, savedSale]);
+    } catch (err) {
+      console.error("Sale save karne me error aya:", err);
+    }
   };
+
   const renderPage = () => {
     switch (activePage) {
       case 'dashboard': 
@@ -100,10 +105,8 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', backgroundColor: '#f8fafc', minHeight: '100vh', margin: 0, padding: 0 }}>
-      {/* ⚡ साइडबार को भी मास्टर स्टोर नेम प्रोप दे दिया गया है */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} storeName={storeName} />
       
-      {/* मुख्य कंटेंट रेंडरर बॉक्स */}
       <div style={{ flex: 1, padding: '24px', overflowY: 'auto', boxSizing: 'border-box' }}>
         {renderPage()}
       </div>
