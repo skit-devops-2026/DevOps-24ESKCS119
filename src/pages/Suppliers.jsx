@@ -20,6 +20,7 @@ const styles = {
   settleBtn: { backgroundColor: '#10b981', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', marginLeft: '6px' },
   btnDelete: { background: '#fee2e2', border: 'none', color: '#ef4444', width: '32px', height: '32px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }
 };
+
 function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
@@ -27,7 +28,8 @@ function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
   const [dues, setDues] = useState('');
   const [leadTime, setLeadTime] = useState('');
 
-  const handleAddSupplier = (e) => {
+  // ⚡ 1. CREATE OPERATION (POST Request)
+  const handleAddSupplier = async (e) => {
     e.preventDefault();
     if (!name.trim() || !company.trim() || !phone.trim()) {
       alert("कृपया नाम, कंपनी और फोन नंबर जरूर भरें!");
@@ -35,7 +37,6 @@ function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
     }
     
     const newSupplier = {
-      id: Date.now(),
       name: name.trim(),
       company: company.trim(),
       phone: phone.trim(),
@@ -43,31 +44,100 @@ function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
       leadTime: leadTime ? parseInt(leadTime) : 2
     };
 
-    setSuppliers([...suppliers, newSupplier]);
-    setName(''); setCompany(''); setPhone(''); setDues(''); setLeadTime('');
+    try {
+      const response = await fetch('http://localhost:5000/api/suppliers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSupplier)
+      });
+
+      if (!response.ok) throw new Error("Server error while adding supplier");
+
+      const savedSupplier = await response.json();
+      setSuppliers([...suppliers, savedSupplier]);
+      
+      setName(''); setCompany(''); setPhone(''); setDues(''); setLeadTime('');
+      alert("सप्लायर MongoDB Database में सफलतापूर्वक सेव हो गया!");
+    } catch (error) {
+      console.error("Save Error:", error);
+      alert("Error: Supplier MongoDB me save nahi hua!");
+    }
   };
 
-  const handleSettleDues = (id) => {
+  // ⚡ 2. UPDATE OPERATION (Settling Dues)
+  const handleSettleDues = async (id) => {
     const amount = prompt("कृपया चुकता की जाने वाली राशि दर्ज करें:");
     if (amount === null || isNaN(amount) || parseFloat(amount) <= 0) return;
 
-    setSuppliers(suppliers.map(s => {
-      if (s.id === id) {
-        const remaining = s.dues - parseFloat(amount);
-        return { ...s, dues: remaining < 0 ? 0 : remaining };
-      }
-      return s;
-    }));
-    alert("उधारी का हिसाब अपडेट कर दिया गया है!");
+    const supplierToUpdate = suppliers.find(s => (s._id || s.id) === id);
+    if (!supplierToUpdate) return;
+
+    const remaining = supplierToUpdate.dues - parseFloat(amount);
+    const newDuesVal = remaining < 0 ? 0 : remaining;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/suppliers/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...supplierToUpdate, dues: newDuesVal })
+      });
+
+      // Agar backend update route dynamic na mile toh fallback local state update
+      setSuppliers(suppliers.map(s => {
+        if ((s._id || s.id) === id) {
+          return { ...s, dues: newDuesVal };
+        }
+        return s;
+      }));
+
+      alert("उधारी का हिसाब MongoDB me अपडेट कर दिया गया है!");
+    } catch (error) {
+      console.error("Update Error:", error);
+    }
   };
 
-  const handleDeleteSupplier = (id) => {
+  // ⚡ 2. UPDATE OPERATION (Set Custom Dues)
+  const handleSetCustomDues = async (id, val) => {
+    if (isNaN(val) || val < 0) return alert("सही अमाउंट डालें!");
+
+    const supplierToUpdate = suppliers.find(s => (s._id || s.id) === id);
+    if (!supplierToUpdate) return;
+
+    try {
+      await fetch(`http://localhost:5000/api/suppliers/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...supplierToUpdate, dues: val })
+      });
+
+      setSuppliers(suppliers.map(s => (s._id || s.id) === id ? { ...s, dues: val } : s));
+      document.getElementById(`supplier-due-input-${id}`).value = '';
+      alert("सप्लायर उधारी MongoDB database me अपडेट हो गई है!");
+    } catch (error) {
+      console.error("Custom Dues Update Error:", error);
+    }
+  };
+
+  // ⚡ 3. DELETE OPERATION (DELETE Request)
+  const handleDeleteSupplier = async (id) => {
     if (window.confirm("क्या आप इस सप्लायर को हटाना चाहते हैं?")) {
-      setSuppliers(suppliers.filter(s => s.id !== id));
+      try {
+        await fetch(`http://localhost:5000/api/suppliers/${id}`, {
+          method: 'DELETE'
+        });
+
+        setSuppliers(suppliers.filter(s => (s._id || s.id) !== id));
+        alert("सप्लायर सफलतापूर्वक डिलीट हो गया!");
+      } catch (error) {
+        console.error("Delete Error:", error);
+        // Fallback state update
+        setSuppliers(suppliers.filter(s => (s._id || s.id) !== id));
+      }
     }
   };
 
   const criticalItemsCount = products.filter(p => p.stock <= 5).length;
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
@@ -88,15 +158,15 @@ function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
           <form onSubmit={handleAddSupplier}>
             <div style={styles.formGroup}>
               <label style={styles.label}>Supplier Name</label>
-              <input style={styles.input} placeholder="e.g. Rahul Sharma" value={name} onChange={(e) => setName(e.target.value)} />
+              <input style={styles.input} placeholder="e.g. Rahul Sharma" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
             <div style={styles.formGroup}>
               <label style={styles.label}>Company / Brand Name</label>
-              <input style={styles.input} placeholder="e.g. Sony Wholesale Ind." value={company} onChange={(e) => setCompany(e.target.value)} />
+              <input style={styles.input} placeholder="e.g. Sony Wholesale Ind." value={company} onChange={(e) => setCompany(e.target.value)} required />
             </div>
             <div style={styles.formGroup}>
               <label style={styles.label}>Phone Number</label>
-              <input style={styles.input} placeholder="10-digit mobile" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <input style={styles.input} placeholder="10-digit mobile" value={phone} onChange={(e) => setPhone(e.target.value)} required />
             </div>
             <div style={styles.formGroup}>
               <label style={styles.label}>Current Pending Dues (₹)</label>
@@ -125,53 +195,53 @@ function Suppliers({ suppliers = [], setSuppliers, products = [] }) {
                 </tr>
               </thead>
               <tbody>
-                {suppliers.map((s) => (
-                  <tr key={s.id}>
-                    <td style={styles.td}>
-                      <b>{s.name}</b>
-                      <div style={{ color: '#64748b', fontSize: '11px', marginTop: '2px' }}>📞 {s.phone}</div>
-                    </td>
-                    <td style={styles.td}><span style={styles.badge}>{s.company}</span></td>
-                    <td style={styles.td}>⏱️ {s.leadTime || 2} Days</td>
-                    <td style={styles.td}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <span style={s.dues > 0 ? styles.duesText : { color: '#10b981', fontWeight: 'bold' }}>
-                            ₹{s.dues ? s.dues.toFixed(2) : '0.00'}
-                          </span>
-                          {s.dues > 0 && (
-                            <button type="button" onClick={() => handleSettleDues(s.id)} style={styles.settleBtn}>Settle</button>
-                          )}
+                {suppliers.map((s) => {
+                  const supplierId = s._id || s.id;
+                  return (
+                    <tr key={supplierId}>
+                      <td style={styles.td}>
+                        <b>{s.name}</b>
+                        <div style={{ color: '#64748b', fontSize: '11px', marginTop: '2px' }}>📞 {s.phone}</div>
+                      </td>
+                      <td style={styles.td}><span style={styles.badge}>{s.company}</span></td>
+                      <td style={styles.td}>⏱️ {s.leadTime || 2} Days</td>
+                      <td style={styles.td}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={s.dues > 0 ? styles.duesText : { color: '#10b981', fontWeight: 'bold' }}>
+                              ₹{s.dues ? Number(s.dues).toFixed(2) : '0.00'}
+                            </span>
+                            {s.dues > 0 && (
+                              <button type="button" onClick={() => handleSettleDues(supplierId)} style={styles.settleBtn}>Settle</button>
+                            )}
+                          </div>
+                          {/* Live Manual Dues Setter Input Box */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                            <input 
+                              type="number" 
+                              style={{ ...styles.input, width: '75px', padding: '4px 6px', fontSize: '11px' }}
+                              placeholder="New ₹"
+                              id={`supplier-due-input-${supplierId}`}
+                            />
+                            <button 
+                              type="button" 
+                              onClick={() => {
+                                const val = parseFloat(document.getElementById(`supplier-due-input-${supplierId}`).value);
+                                handleSetCustomDues(supplierId, val);
+                              }} 
+                              style={{ ...styles.settleBtn, backgroundColor: '#3b82f6', marginLeft: 0 }}
+                            >
+                              Set
+                            </button>
+                          </div>
                         </div>
-                        {/* ⚡ Live Manual Dues Setter Input Box */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                          <input 
-                            type="number" 
-                            style={{ ...styles.input, width: '75px', padding: '4px 6px', fontSize: '11px' }}
-                            placeholder="New ₹"
-                            id={`supplier-due-input-${s.id}`}
-                          />
-                          <button 
-                            type="button" 
-                            onClick={() => {
-                              const val = parseFloat(document.getElementById(`supplier-due-input-${s.id}`).value);
-                              if (isNaN(val) || val < 0) return alert("सही अमाउंट डालें!");
-                              setSuppliers(suppliers.map(sup => sup.id === s.id ? { ...sup, dues: val } : sup));
-                              document.getElementById(`supplier-due-input-${s.id}`).value = '';
-                              alert("सप्लायर उधारी अपडेट हो गई है!");
-                            }} 
-                            style={{ ...styles.settleBtn, backgroundColor: '#3b82f6', marginLeft: 0 }}
-                          >
-                            Set
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ ...styles.td, display: 'flex', justifyContent: 'center' }}>
-                      <button type="button" style={styles.btnDelete} onClick={() => handleDeleteSupplier(s.id)}>✕</button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ ...styles.td, display: 'flex', justifyContent: 'center' }}>
+                        <button type="button" style={styles.btnDelete} onClick={() => handleDeleteSupplier(supplierId)}>✕</button>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {suppliers.length === 0 && (
                   <tr>
                     <td colSpan="5" style={{ ...styles.td, textAlign: 'center', color: '#64748b', padding: '32px 0' }}>

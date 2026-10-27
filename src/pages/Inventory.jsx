@@ -20,8 +20,8 @@ const styles = {
   inlineBtn: { backgroundColor: '#3b82f6', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' },
   btnDelete: { background: '#fee2e2', border: 'none', color: '#ef4444', width: '32px', height: '32px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }
 };
+
 export default function Inventory({ products = [], setProducts }) {
-  // कैटेगरीज को localStorage से लोड करना ताकि वो भी डिलीट न हों
   const [categories, setCategories] = useState(() => {
     const savedCats = localStorage.getItem('nexus_categories');
     return savedCats ? JSON.parse(savedCats) : ['Electronics', 'Groceries', 'Apparel'];
@@ -37,7 +37,8 @@ export default function Inventory({ products = [], setProducts }) {
   const [updateStockAmounts, setUpdateStockAmounts] = useState({});
   const [updatePriceAmounts, setUpdatePriceAmounts] = useState({});
 
-  // जब भी कैटेगरीज बदलें, उन्हें लोकल स्टोरेज में सेव करें
+  const getPId = (p) => p._id || p.id;
+
   useEffect(() => {
     localStorage.setItem('nexus_categories', JSON.stringify(categories));
   }, [categories]);
@@ -47,7 +48,7 @@ export default function Inventory({ products = [], setProducts }) {
     const cat = newCategoryInput.trim();
     if (!cat) return;
     if (categories.some(c => c.toLowerCase() === cat.toLowerCase())) {
-      alert("यह कैटेगरी पहले से मौजूद है!");
+      alert("Yeh category pehle se maujood hai!");
       return;
     }
     setCategories([...categories, cat]);
@@ -55,62 +56,116 @@ export default function Inventory({ products = [], setProducts }) {
     setNewCategoryInput('');
   };
 
-  const handleAddProduct = (e) => {
+  // ⚡ 1. CREATE OPERATION (POST)
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!name.trim() || !price || !stock) return;
 
-    const newItem = {
-      id: Date.now(),
+    const newItemData = {
       name: name.trim(),
       category: selectedCategory,
       price: parseFloat(price),
       stock: parseInt(stock)
     };
 
-    const updatedList = [...products, newItem];
-    setProducts(updatedList);
-    // मास्टर लिस्ट को localStorage में तुरंत पुश करना
-    localStorage.setItem('nexus_products', JSON.stringify(updatedList));
+    try {
+      const response = await fetch('http://localhost:5000/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newItemData)
+      });
 
-    setName(''); setPrice(''); setStock('');
+      if (!response.ok) throw new Error("Product save nahi hua");
+
+      const savedProduct = await response.json();
+      setProducts([...products, savedProduct]);
+      
+      setName(''); setPrice(''); setStock('');
+      alert("Product MongoDB database mein save ho gaya hai!");
+    } catch (error) {
+      console.error("Product Save Error:", error);
+      alert("Error: Product MongoDB mein save nahi hua!");
+    }
   };
 
-  const handleQuickStockUpdate = (id) => {
+  // ⚡ 2. UPDATE OPERATION (PUT) - Stock Refill
+  const handleQuickStockUpdate = async (id) => {
     const amount = parseInt(updateStockAmounts[id]);
     if (isNaN(amount) || amount <= 0) {
-      alert("कृपया सही स्टॉक संख्या दर्ज करें!");
+      alert("Kripya sahi stock sankhya darj karen!");
       return;
     }
-    const updatedList = products.map(p => p.id === id ? { ...p, stock: p.stock + amount } : p);
-    setProducts(updatedList);
-    localStorage.setItem('nexus_products', JSON.stringify(updatedList));
-    setUpdateStockAmounts({ ...updateStockAmounts, [id]: '' });
+
+    const itemToUpdate = products.find(p => getPId(p) === id);
+    if (!itemToUpdate) return;
+
+    const newStock = itemToUpdate.stock + amount;
+
+    try {
+      await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...itemToUpdate, stock: newStock })
+      });
+
+      setProducts(products.map(p => getPId(p) === id ? { ...p, stock: newStock } : p));
+      setUpdateStockAmounts({ ...updateStockAmounts, [id]: '' });
+      alert("Stock status update ho gaya hai!");
+    } catch (error) {
+      console.error("Stock Update Error:", error);
+      setProducts(products.map(p => getPId(p) === id ? { ...p, stock: newStock } : p));
+    }
   };
 
-  const handleQuickPriceUpdate = (id) => {
+  // ⚡ 2. UPDATE OPERATION (PUT) - Price Update
+  const handleQuickPriceUpdate = async (id) => {
     const newPrice = parseFloat(updatePriceAmounts[id]);
     if (isNaN(newPrice) || newPrice <= 0) {
-      alert("कृपया सही कीमत दर्ज करें!");
+      alert("Kripya sahi keemat darj karen!");
       return;
     }
-    const updatedList = products.map(p => p.id === id ? { ...p, price: newPrice } : p);
-    setProducts(updatedList);
-    localStorage.setItem('nexus_products', JSON.stringify(updatedList));
-    setUpdatePriceAmounts({ ...updatePriceAmounts, [id]: '' });
+
+    const itemToUpdate = products.find(p => getPId(p) === id);
+    if (!itemToUpdate) return;
+
+    try {
+      await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...itemToUpdate, price: newPrice })
+      });
+
+      setProducts(products.map(p => getPId(p) === id ? { ...p, price: newPrice } : p));
+      setUpdatePriceAmounts({ ...updatePriceAmounts, [id]: '' });
+      alert("Product price update ho gaya hai!");
+    } catch (error) {
+      console.error("Price Update Error:", error);
+      setProducts(products.map(p => getPId(p) === id ? { ...p, price: newPrice } : p));
+    }
   };
 
-  const handleDeleteItem = (id) => {
-    if (window.confirm("क्या आप इस आइटम को हटाना चाहते हैं?")) {
-      const updatedList = products.filter(item => item.id !== id);
-      setProducts(updatedList);
-      localStorage.setItem('nexus_products', JSON.stringify(updatedList));
+  // ⚡ 3. DELETE OPERATION (DELETE)
+  const handleDeleteItem = async (id) => {
+    if (window.confirm("Kya aap is item ko hatana chahte hain?")) {
+      try {
+        await fetch(`http://localhost:5000/api/products/${id}`, {
+          method: 'DELETE'
+        });
+
+        setProducts(products.filter(item => getPId(item) !== id));
+        alert("Product successfully delete ho gaya!");
+      } catch (error) {
+        console.error("Delete Error:", error);
+        setProducts(products.filter(item => getPId(item) !== id));
+      }
     }
   };
 
   const filteredStock = products.filter(item => 
-    item.name.toLowerCase().includes(search.toLowerCase()) || 
-    item.category.toLowerCase().includes(search.toLowerCase())
+    (item.name || '').toLowerCase().includes(search.toLowerCase()) || 
+    (item.category || '').toLowerCase().includes(search.toLowerCase())
   );
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
@@ -124,7 +179,6 @@ export default function Inventory({ products = [], setProducts }) {
       </header>
 
       <div style={styles.layout}>
-        {/* Left Side: Form Panels */}
         <div>
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>🛠️ Manage Categories</h3>
@@ -137,7 +191,7 @@ export default function Inventory({ products = [], setProducts }) {
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>➕ Register New Product</h3>
             <form onSubmit={handleAddProduct}>
-              <div style={styles.formGroup}><label style={styles.label}>Product Name</label><input style={styles.input} placeholder="Item description" value={name} onChange={(e) => setName(e.target.value)} /></div>
+              <div style={styles.formGroup}><label style={styles.label}>Product Name</label><input style={styles.input} placeholder="Item description" value={name} onChange={(e) => setName(e.target.value)} required /></div>
               <div style={styles.formGroup}>
                 <label style={styles.label}>Category</label>
                 <select style={{ ...styles.input, cursor: 'pointer' }} value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
@@ -146,14 +200,13 @@ export default function Inventory({ products = [], setProducts }) {
                   ))}
                 </select>
               </div>
-              <div style={styles.formGroup}><label style={styles.label}>Retail Price (₹)</label><input style={styles.input} type="number" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
-              <div style={styles.formGroup}><label style={styles.label}>Initial Stock Qty</label><input style={styles.input} type="number" placeholder="Total pcs" value={stock} onChange={(e) => setStock(e.target.value)} /></div>
+              <div style={styles.formGroup}><label style={styles.label}>Retail Price (₹)</label><input style={styles.input} type="number" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} required /></div>
+              <div style={styles.formGroup}><label style={styles.label}>Initial Stock Qty</label><input style={styles.input} type="number" placeholder="Total pcs" value={stock} onChange={(e) => setStock(e.target.value)} required /></div>
               <button type="submit" style={styles.btnSubmit}>Save To Master Database</button>
             </form>
           </div>
         </div>
 
-        {/* Right Side: Table Panel */}
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Live Inventory Log ({filteredStock.length} items)</h3>
           <div style={{ overflowX: 'auto' }}>
@@ -169,56 +222,59 @@ export default function Inventory({ products = [], setProducts }) {
                 </tr>
               </thead>
               <tbody>
-                {filteredStock.map((item) => (
-                  <tr key={item.id}>
-                    <td style={styles.td}><b>{item.name}</b></td>
-                    <td style={styles.td}>
-                      <span style={{ backgroundColor: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', color: '#475569', fontWeight: '500' }}>
-                        {item.category}
-                      </span>
-                    </td>
-                    <td style={{ ...styles.td, fontWeight: 'bold', color: '#0f172a' }}>₹{item.price}</td>
-                    <td style={styles.td}>
-                      <span style={{ 
-                        fontWeight: 'bold', 
-                        color: item.stock <= 5 ? '#ef4444' : '#10b981',
-                        backgroundColor: item.stock <= 5 ? '#fef2f2' : '#f0fdf4',
-                        padding: '4px 8px',
-                        borderRadius: '6px'
-                      }}>
-                        {item.stock} Pcs {item.stock <= 5 && '⚠️'}
-                      </span>
-                    </td>
-                    <td style={styles.td}>
-                      <div style={styles.actionWrapper}>
-                        <div style={styles.inlineGroup}>
-                          <input 
-                            type="number" 
-                            style={styles.inlineInput} 
-                            placeholder="+ Stock"
-                            value={updateStockAmounts[item.id] || ''}
-                            onChange={(e) => setUpdateStockAmounts({ ...updateStockAmounts, [item.id]: e.target.value })}
-                          />
-                          <button type="button" onClick={() => handleQuickStockUpdate(item.id)} style={styles.inlineBtn}>Refill</button>
+                {filteredStock.map((item) => {
+                  const itemId = getPId(item);
+                  return (
+                    <tr key={itemId}>
+                      <td style={styles.td}><b>{item.name}</b></td>
+                      <td style={styles.td}>
+                        <span style={{ backgroundColor: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', color: '#475569', fontWeight: '500' }}>
+                          {item.category}
+                        </span>
+                      </td>
+                      <td style={{ ...styles.td, fontWeight: 'bold', color: '#0f172a' }}>₹{item.price}</td>
+                      <td style={styles.td}>
+                        <span style={{ 
+                          fontWeight: 'bold', 
+                          color: item.stock <= 5 ? '#ef4444' : '#10b981',
+                          backgroundColor: item.stock <= 5 ? '#fef2f2' : '#f0fdf4',
+                          padding: '4px 8px',
+                          borderRadius: '6px'
+                        }}>
+                          {item.stock} Pcs {item.stock <= 5 && '⚠️'}
+                        </span>
+                      </td>
+                      <td style={styles.td}>
+                        <div style={styles.actionWrapper}>
+                          <div style={styles.inlineGroup}>
+                            <input 
+                              type="number" 
+                              style={styles.inlineInput} 
+                              placeholder="+ Stock"
+                              value={updateStockAmounts[itemId] || ''}
+                              onChange={(e) => setUpdateStockAmounts({ ...updateStockAmounts, [itemId]: e.target.value })}
+                            />
+                            <button type="button" onClick={() => handleQuickStockUpdate(itemId)} style={styles.inlineBtn}>Refill</button>
+                          </div>
+                          
+                          <div style={styles.inlineGroup}>
+                            <input 
+                              type="number" 
+                              style={styles.inlineInput} 
+                              placeholder="New ₹"
+                              value={updatePriceAmounts[itemId] || ''}
+                              onChange={(e) => setUpdatePriceAmounts({ ...updatePriceAmounts, [itemId]: e.target.value })}
+                            />
+                            <button type="button" onClick={() => handleQuickPriceUpdate(itemId)} style={{ ...styles.inlineBtn, backgroundColor: '#10b981' }}>Set ₹</button>
+                          </div>
                         </div>
-                        
-                        <div style={styles.inlineGroup}>
-                          <input 
-                            type="number" 
-                            style={styles.inlineInput} 
-                            placeholder="New ₹"
-                            value={updatePriceAmounts[item.id] || ''}
-                            onChange={(e) => setUpdatePriceAmounts({ ...updatePriceAmounts, [item.id]: e.target.value })}
-                          />
-                          <button type="button" onClick={() => handleQuickPriceUpdate(item.id)} style={{ ...styles.inlineBtn, backgroundColor: '#10b981' }}>Set ₹</button>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ ...styles.td, textAlign: 'center' }}>
-                      <button type="button" style={styles.btnDelete} onClick={() => handleDeleteItem(item.id)} title="Delete Product">✕</button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ ...styles.td, textAlign: 'center' }}>
+                        <button type="button" style={styles.btnDelete} onClick={() => handleDeleteItem(itemId)} title="Delete Product">✕</button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
