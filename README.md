@@ -1,10 +1,9 @@
-# Live Deployment URL
+# Live URL
 
-https://devops-24eskcs119.onrender.com
-
+- **Live URL:** https://devops-24eskcs119.onrender.com
 - **Docker image:** https://hub.docker.com/r/divyanshugupta063/devops-24eskcs119
 - **Pull command:** `docker pull divyanshugupta063/devops-24eskcs119:latest`
-- **Local Deployment URL:** http://localhost:9000
+- **Local URL:** http://localhost:9000
 
 # React + Vite
 
