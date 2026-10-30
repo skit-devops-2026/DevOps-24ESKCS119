@@ -46,13 +46,13 @@ export default function App() {
       .catch(err => console.error("Error loading suppliers:", err));
 
     // स्टोर नाम लोकलस्टोरेज में ही छोड़ देते हैं क्योंकि यह छोटा मेटाडेटा है
-    const savedStoreName = localStorage.getItem('nexus_store_name');
+    const savedStoreName = localStorage.getItem('Retail_Manager_name');
     if (savedStoreName) setStoreName(savedStoreName);
   }, []);
 
   // स्टोर नाम जब भी बदलेगा लोकलस्टोरेज में रहेगा (सेटिंग्स के लिए आसान रहेगा)
   useEffect(() => {
-    localStorage.setItem('nexus_store_name', storeName);
+    localStorage.setItem('Retail_Manager_name', storeName);
   }, [storeName]);
 
 

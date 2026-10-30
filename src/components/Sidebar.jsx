@@ -7,13 +7,16 @@ const sidebarStyles = {
   activeNavLink: { backgroundColor: '#eff6ff', color: '#2563eb' }
 };
 
-// ⚡ यहाँ ध्यान दें भाई: ब्रैकेट के अंदर storeName को साफ़-साफ़ लिखा गया है ताकि App.jsx से नाम यहाँ आ सके!
-export default function Sidebar({ activePage, setActivePage, storeName }) {
+export default function Sidebar({ activePage, setActivePage }) {
+  // Purane prop ko bypass karke direct 'Retail Manager' set kar diya hai
+  const displayName = 'Retail Manager';
+
   return (
     <aside style={sidebarStyles.sidebar}>
-      {/* 🚀 अब यह सीधा आपकी सेटिंग्स से बदले हुए नाम को लाइव दिखाएगा */}
+      
+      {/* Fixed Logo Area */}
       <div style={sidebarStyles.logoArea}>
-        <span>🏪</span> {storeName || 'NEXUS SHOP'}
+        🛍️ {displayName}
       </div>
       
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
